@@ -1,18 +1,12 @@
 const Token = require('./token');
 const Query = require('./class');
 const { ClassConditionNode, ColumnConditionNode } = require('./ast');
+const MyArray = require('./my-array');
 
 const Parser = function () { };
 
 Parser.prototype.parse = function (tokens) {
-  let copied = [...tokens];
-  class MyArray extends Array {
-    shift() {
-      if (this.length === 0) throw new RangeError('you used shift() with empty array.');
-      return super.shift();
-    }
-  }
-  return this.parseQuery(new MyArray(...copied));
+  return this.parseQuery(new MyArray(...tokens));
 };
 
 // query := class-condition
