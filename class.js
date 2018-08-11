@@ -24,7 +24,10 @@ const Track = {
   name: 'Track',
   columns: {
     'artists': { edge: `out('ParticipatesIn')` },
-    'name': 'name.ko'
+    'name': 'name.ko',
+    'type': 'trackType',
+    'song': { edge: `in('OriginatedFrom')` },
+    'number_of_artists': `in('ParticipatesIn').size()`
   },
   columnsResolver: function (query) {
     var candidates = {
@@ -38,7 +41,19 @@ const Track = {
       'participated-in': 'artists',
       'participated in': 'artists',
       'ParticipatedIn': 'artists',
-      'participatedIn': 'artists'
+      'participatedIn': 'artists',
+      '노래': 'song',
+      '참여수': 'number_of_artists',
+      '참여자수': 'number_of_artists',
+      '참여 수': 'number_of_artists',
+      '참여캐릭터수': 'number_of_artists',
+      '참여캐릭터 수': 'number_of_artists',
+      '참여 캐릭터수': 'number_of_artists',
+      '참여 캐릭터 수': 'number_of_artists',
+      '참여한 캐릭터 수': 'number_of_artists',
+      '참여한캐릭터 수': 'number_of_artists',
+      '참여한 캐릭터수': 'number_of_artists',
+      '참여한 캐릭터 수': 'number_of_artists',
     };
     return candidates[query] || query;
   }
@@ -65,7 +80,8 @@ const Song = {
   name: 'Song',
   columns: {
     'name': 'name.ko',
-    'has': { edge: `in('SongFor')` }
+    'has': { edge: `in('SongFor')` },
+    'track': { edge: `out('OriginatedFrom')` }
   },
   columnsResolver(query) {
     var candidates = {
@@ -75,7 +91,8 @@ const Song = {
       '전용곡인': 'has',
       '전용곡인 캐릭터': 'has',
       '전용곡인캐릭터': 'has',
-      '캐릭터': 'has'
+      '캐릭터': 'has',
+      '트랙': 'track',
     };
     return candidates[query] || query;
   }
@@ -83,8 +100,10 @@ const Song = {
 
 Album.columns.tracks.class = Track;
 Track.columns.artists.class = Participatable;
+Track.columns.song.class = Song;
 Participatable.columns.song.class = Song;
 Song.columns.has.class = Participatable;
+Song.columns.track.class = Track;
 
 var Root = {
   name: 'Root',
