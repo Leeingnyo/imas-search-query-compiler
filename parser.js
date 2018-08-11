@@ -13,11 +13,11 @@ ClassConditionNode.prototype.toString = function () {
   var className = this.class.value;
   var projection;
   if (isRoot) {
-    if (!Query[className]) {
-      throw new TypeError(`no class named '${className}'`);
+    if (!Query.columns[Query.columnsResolver(className)]) {
+      throw new TypeError(`no class named '${className}' on root`);
     }
     projection = '*';
-    className = Query[className].class.name;
+    className = Query.columns[Query.columnsResolver(className)].class.name;
   } else {
     const subClass = parent.class.columns[parent.class.columnsResolver(className)];
     if (!subClass) {
@@ -77,7 +77,7 @@ Parser.prototype.parseClassCondition = function parseClassCondition(tokens, cont
 
   var parent = context.parent;
   if (!parent) {
-    var conditions = this.parseConditions(tokens, { parent: Query[_class.value] });
+    var conditions = this.parseConditions(tokens, { parent: Query.columns[Query.columnsResolver(_class.value)] });
   } else {
     var conditions = this.parseConditions(tokens, { parent: parent.class.columns[parent.class.columnsResolver(_class.value)] });
   }
