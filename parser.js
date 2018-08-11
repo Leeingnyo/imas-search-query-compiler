@@ -25,9 +25,15 @@ ClassConditionNode.prototype.toString = function () {
     }
     projection = subClass.edge;
     className = subClass.class.name;
+    if (this.conditions.filter(condition => condition.getType()).map(condition => condition.isArray()).reduce((r, c) => r || c, false)) {
+      projection = `intersect(${projection})`;
+    }
   }
 
   return `${isRoot ? '' : '@rid in ('}select ${projection} from ${className} where ${this.conditions.map(b => b.toString(className)).join(' and ')}${isRoot ? '' : ')'}`;
+}
+ClassConditionNode.prototype.getType = function () {
+  return 0;
 }
 
 function ColumnConditionNode(column, operator, value, context) {
@@ -47,6 +53,12 @@ ColumnConditionNode.prototype.toString = function () {
   } else {
     return `${parent.class.columns[parent.class.columnsResolver(this.column.value)]} ${this.operator.value} ${`"${this.value.toString()}"`}`;
   }
+}
+ColumnConditionNode.prototype.getType = function () {
+  return 1;
+}
+ColumnConditionNode.prototype.isArray = function () {
+  return Array.isArray(this.value);
 }
 
 const Parser = function () { };
