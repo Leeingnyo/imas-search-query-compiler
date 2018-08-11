@@ -65,7 +65,7 @@ select * from Album
 where @rid in (
   select out('BelongsToAlbum') from Track
   where @rid in (
-    select out('ParticipatesIn') from Participatable
+    select intersect(out('ParticipatesIn')) from Participatable
     where name.hangul in ["호시이 미키", "시죠 타카네", "가나하 히비키"])
   and name.ko = "오버마스터")
 ```
