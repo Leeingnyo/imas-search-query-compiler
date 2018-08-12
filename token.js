@@ -21,9 +21,11 @@ Token.TCOM = Symbol(13);
 Token.prototype.toString = function () {
   return `{ type: ${this.type}, value ${this.value} }`
 }
-
-Token.isOperator = function (token) {
-  return [Token.TGTE, Token.TLTE, Token.TE, Token.TNE, Token.TGT, Token.TLT, Token.TCON].includes(token.type);
+Token.prototype.isOperator = function () {
+  return [Token.TGTE, Token.TLTE, Token.TE, Token.TNE, Token.TGT, Token.TLT, Token.TCON].includes(this.type);
+}
+Token.prototype.isContains = function () {
+  return this.type === Token.TCON;
 }
 
 module.exports = Token;

@@ -61,7 +61,7 @@ Parser.prototype.parseColumnCondition = function parseColumnCondition(tokens, co
   if (tokens[0] && tokens[0].type !== Token.TIDS) { throw new SyntaxError('expected letters'); }
   var column = tokens.shift();
 
-  if (!Token.isOperator(tokens[0])) { throw new SyntaxError('expected operator'); }
+  if (!tokens[0].isOperator()) { throw new SyntaxError('expected operator'); }
   var operator = tokens.shift();
 
   var value;

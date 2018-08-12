@@ -34,10 +34,6 @@ var Scanner = function () {
             tokenValue += stream.shift();
             tokens.push(new Token(Token.TGTE, tokenValue));
             break;
-          } else if (stream.peek() === '>') {
-            tokenValue += stream.shift();
-            tokens.push(new Token(Token.TCON, tokenValue));
-            break;
           }
           tokens.push(new Token(Token.TGT, tokenValue));
         }break;
@@ -45,6 +41,10 @@ var Scanner = function () {
           if (stream.peek() === '=') {
             tokenValue += stream.shift();
             tokens.push(new Token(Token.TLTE, tokenValue));
+            break;
+          } else if (stream.peek() === '<') {
+            tokenValue += stream.shift();
+            tokens.push(new Token(Token.TCON, tokenValue));
             break;
           }
           tokens.push(new Token(Token.TLT, tokenValue));

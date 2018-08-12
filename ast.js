@@ -24,7 +24,7 @@ ClassConditionNode.prototype.toString = function () {
     }
     projection = subClass.edge;
     className = subClass.class.name;
-    if (this.conditions.filter(condition => condition.getType()).map(condition => condition.isArray()).reduce((r, c) => r || c, false)) {
+    if (this.conditions.filter(condition => condition.getType()).map(condition => condition.hasArrayValue() && !condition.isOperatorContains()).reduce((r, c) => r || c, false)) {
       projection = `intersect(${projection})`;
     }
   }
@@ -47,8 +47,11 @@ ColumnConditionNode.prototype.toString = function () {
   if (!parent.class.columns[parent.class.columnsResolver(this.column.value)]) {
     throw new TypeError(`no column '${this.column.value}' in '${parent.class.name}'`);
   }
-  if (Array.isArray(this.value)) {
-    return `${parent.class.columns[parent.class.columnsResolver(this.column.value)]} ${'in' || this.operator.value} ${`[${this.value.map(item => `"${item}"`).join(', ')}]`}`;
+  if (this.operator.isContains() && !this.hasArrayValue()) {
+    throw new TypeError(`conatins operator is used with not array value`);
+  }
+  if (this.hasArrayValue()) {
+    return `${parent.class.columns[parent.class.columnsResolver(this.column.value)]} in ${`[${this.value.map(item => `"${item}"`).join(', ')}]`}`;
   } else {
     return `${parent.class.columns[parent.class.columnsResolver(this.column.value)]} ${this.operator.value} ${`"${this.value.toString()}"`}`;
   }
@@ -56,8 +59,11 @@ ColumnConditionNode.prototype.toString = function () {
 ColumnConditionNode.prototype.getType = function () {
   return 1;
 }
-ColumnConditionNode.prototype.isArray = function () {
+ColumnConditionNode.prototype.hasArrayValue = function () {
   return Array.isArray(this.value);
+}
+ColumnConditionNode.prototype.isOperatorContains = function () {
+  return this.operator.isContains();
 }
 
 module.exports = {
