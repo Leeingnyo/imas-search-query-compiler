@@ -10,21 +10,26 @@ ClassConditionNode.prototype.toString = function () {
   var isRoot = !parent;
 
   var className = this.class.value;
+  var columnName;
   var projection;
   if (isRoot) {
-    if (!Query.columns[Query.columnsResolver(className)]) {
+    columnName = Query.columnsResolver(className);
+    if (!Query.columns[columnName]) {
       throw new TypeError(`no class named '${className}' on root`);
     }
     projection = '*';
-    className = Query.columns[Query.columnsResolver(className)].class.name;
+    className = Query.columns[columnName].class.name;
   } else {
-    const subClass = parent.class.columns[parent.class.columnsResolver(className)];
+    columnName = parent.class.columnsResolver(className);
+    const subClass = parent.class.columns[columnName];
     if (!subClass) {
       throw new TypeError(`no column '${className}' in '${parent.class.name}'`);
     }
     projection = subClass.edge;
     className = subClass.class.name;
-    if (this.conditions.filter(condition => condition.getType()).map(condition => condition.hasArrayValue() && !condition.isOperatorContains()).reduce((r, c) => r || c, false)) {
+    if (this.conditions.filter(condition => condition.getType())
+        .map(condition => condition.hasArrayValue() && !condition.isOperatorContains())
+        .reduce((r, c) => r || c, false)) {
       projection = `intersect(${projection})`;
     }
   }
@@ -43,17 +48,18 @@ function ColumnConditionNode(column, operator, value, context) {
 }
 ColumnConditionNode.prototype.toString = function () {
   var parent = this.context.parent;
+  var columnName = parent.class.columnsResolver(this.column.value);
 
-  if (!parent.class.columns[parent.class.columnsResolver(this.column.value)]) {
+  if (!parent.class.columns[columnName]) {
     throw new TypeError(`no column '${this.column.value}' in '${parent.class.name}'`);
   }
   if (this.operator.isContains() && !this.hasArrayValue()) {
     throw new TypeError(`conatins operator is used with not array value`);
   }
   if (this.hasArrayValue()) {
-    return `${parent.class.columns[parent.class.columnsResolver(this.column.value)]} in ${`[${this.value.map(item => `"${item}"`).join(', ')}]`}`;
+    return `${parent.class.columns[columnName]} in ${`[${this.value.map(item => `"${item}"`).join(', ')}]`}`;
   } else {
-    return `${parent.class.columns[parent.class.columnsResolver(this.column.value)]} ${this.operator.value} ${`"${this.value.toString()}"`}`;
+    return `${parent.class.columns[columnName]} ${this.operator.value} ${`"${this.value.toString()}"`}`;
   }
 }
 ColumnConditionNode.prototype.getType = function () {
