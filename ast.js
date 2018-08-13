@@ -7,7 +7,7 @@ function ClassConditionNode(_class, conditions, context) {
 }
 ClassConditionNode.prototype.toString = function () {
   var parent = this.context.parent;
-  var isRoot = !parent;
+  var isRoot = this.isRoot();
 
   var className = this.class.value;
   var columnName;
@@ -34,10 +34,21 @@ ClassConditionNode.prototype.toString = function () {
     }
   }
 
-  return `${isRoot ? '' : '@rid in ('}select ${projection} from ${className} where ${this.conditions.map(b => b.toString(className)).join(' and ')}${isRoot ? '' : ')'}`;
+  const conditions = Object.values(
+    this.conditions.map(condition => ({ [condition.getColumnName()]: condition }))
+        .reduce((r, c) => Object.assign(r, c), {})
+  ); // remove duplicates
+
+  return `${isRoot ? '' : '@rid in ('}select ${projection} from ${className} where ${conditions.map(b => b.toString(className)).join(' and ')}${isRoot ? '' : ')'}`;
 }
 ClassConditionNode.prototype.getType = function () {
   return 0;
+}
+ClassConditionNode.prototype.getColumnName = function () {
+  return this.isRoot() ? Query.columnsResolver(this.class.value) : this.context.parent.class.columnsResolver(this.class.value);
+};
+ClassConditionNode.prototype.isRoot = function () {
+  return !this.context.parent;
 }
 
 function ColumnConditionNode(column, operator, value, context) {
@@ -48,7 +59,7 @@ function ColumnConditionNode(column, operator, value, context) {
 }
 ColumnConditionNode.prototype.toString = function () {
   var parent = this.context.parent;
-  var columnName = parent.class.columnsResolver(this.column.value);
+  var columnName = this.getColumnName();
 
   if (!parent.class.columns[columnName]) {
     throw new Error(`no column '${this.column.value}' in '${parent.class.name}'`);
@@ -70,6 +81,9 @@ ColumnConditionNode.prototype.hasArrayValue = function () {
 }
 ColumnConditionNode.prototype.isOperatorContains = function () {
   return this.operator.isContains();
+}
+ColumnConditionNode.prototype.getColumnName = function () {
+  return this.context.parent.class.columnsResolver(this.column.value);
 }
 
 module.exports = {
