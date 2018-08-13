@@ -15,7 +15,7 @@ ClassConditionNode.prototype.toString = function () {
   if (isRoot) {
     columnName = Query.columnsResolver(className);
     if (!Query.columns[columnName]) {
-      throw new TypeError(`no class named '${className}' on root`);
+      throw new Error(`no class named '${className}' on root`);
     }
     projection = '*';
     className = Query.columns[columnName].class.name;
@@ -23,7 +23,7 @@ ClassConditionNode.prototype.toString = function () {
     columnName = parent.class.columnsResolver(className);
     const subClass = parent.class.columns[columnName];
     if (!subClass) {
-      throw new TypeError(`no column '${className}' in '${parent.class.name}'`);
+      throw new Error(`no column '${className}' in '${parent.class.name}'`);
     }
     projection = subClass.edge;
     className = subClass.class.name;
@@ -51,10 +51,10 @@ ColumnConditionNode.prototype.toString = function () {
   var columnName = parent.class.columnsResolver(this.column.value);
 
   if (!parent.class.columns[columnName]) {
-    throw new TypeError(`no column '${this.column.value}' in '${parent.class.name}'`);
+    throw new Error(`no column '${this.column.value}' in '${parent.class.name}'`);
   }
   if (this.operator.isContains() && !this.hasArrayValue()) {
-    throw new TypeError(`conatins operator is used with not array value`);
+    throw new Error(`conatins operator is used with not array value`);
   }
   if (this.hasArrayValue()) {
     return `${parent.class.columns[columnName]} in ${`[${this.value.map(item => `"${item}"`).join(', ')}]`}`;
