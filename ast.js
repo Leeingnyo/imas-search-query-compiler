@@ -39,7 +39,7 @@ ClassConditionNode.prototype.toString = function () {
         .reduce((r, c) => Object.assign(r, c), {})
   ); // remove duplicates
 
-  return `${isRoot ? '' : '@rid in ('}select ${projection} from ${className} where ${conditions.map(b => b.toString(className)).join(' and ')}${isRoot ? '' : ')'}`;
+  return `${isRoot ? '' : '@rid in ('}select ${projection} from ${className} where ${conditions.map(b => b.toString(className)).join(' and ')}${isRoot ? ' order by id' : ')'}`;
 }
 ClassConditionNode.prototype.getType = function () {
   return 0;
