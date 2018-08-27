@@ -17,15 +17,19 @@ Token.TGT = Symbol(10);
 Token.TLT = Symbol(11);
 Token.TCON = Symbol(12);
 Token.TCOM = Symbol(13);
+Token.TLIKE = Symbol(14);
 
 Token.prototype.toString = function () {
   return `{ type: ${this.type}, value ${this.value} }`
 }
 Token.prototype.isOperator = function () {
-  return [Token.TGTE, Token.TLTE, Token.TE, Token.TNE, Token.TGT, Token.TLT, Token.TCON].includes(this.type);
+  return [Token.TGTE, Token.TLTE, Token.TE, Token.TNE, Token.TGT, Token.TLT, Token.TCON, Token.TLIKE].includes(this.type);
 }
 Token.prototype.isContains = function () {
   return this.type === Token.TCON;
+}
+Token.prototype.isLike = function () {
+  return this.type === Token.TLIKE;
 }
 
 module.exports = Token;

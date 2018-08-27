@@ -65,11 +65,17 @@ ColumnConditionNode.prototype.toString = function () {
     throw new Error(`no column '${this.column.value}' in '${parent.class.name}'`);
   }
   if (this.operator.isContains() && !this.hasArrayValue()) {
-    throw new Error(`conatins operator is used with not array value`);
+    throw new Error(`conatins operator is used with non array value`);
+  }
+  if (this.operator.isLike() && this.hasArrayValue()) {
+    throw new Error(`like operator is used with array value`);
   }
   if (this.hasArrayValue()) {
     return `${parent.class.columns[columnName]} in ${`[${this.value.map(item => `"${item}"`).join(', ')}]`}`;
   } else {
+    if (this.operator.isLike()) {
+      return `${parent.class.columns[columnName]} like ${`"%${this.value.toString()}%"`}`;
+    }
     return `${parent.class.columns[columnName]} ${this.operator.value} ${`"${this.value.toString()}"`}`;
   }
 }

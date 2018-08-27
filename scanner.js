@@ -15,7 +15,7 @@ Stream.prototype.isEmpty = function () {
 }
 
 var Scanner = function () {
-  var SPECIAL_CHARACTERS = '[()]!=><,';
+  var SPECIAL_CHARACTERS = '[()]!=><,~';
 
   this.parse = function (query) {
     var stream = new Stream(query);
@@ -58,6 +58,9 @@ var Scanner = function () {
         } break;
         case '=': {
           tokens.push(new Token(Token.TE, tokenValue));
+        } break;
+        case '~': {
+          tokens.push(new Token(Token.TLIKE, tokenValue));
         } break;
         case '(': {
           tokens.push(new Token(Token.TOP, tokenValue));
