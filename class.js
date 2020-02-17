@@ -72,6 +72,7 @@ const Participatable = {
   name: 'Participatable',
   columns: {
     'name': 'name.hangul',
+    'nameja': 'name.ja',
     'peopleType': 'peopleType',
     'characterType': 'characterType',
     'company': 'company',
@@ -85,6 +86,7 @@ const Participatable = {
   columnsResolver: function (query) {
     var candidates = {
       '이름': 'name',
+      '일본이름': 'nameja',
       '종류': 'peopleType',
       '역할': 'characterType',
       '회사': 'company',
