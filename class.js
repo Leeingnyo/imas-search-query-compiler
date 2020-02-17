@@ -143,6 +143,7 @@ Track.columns.album.class = Album;
 Participatable.columns.song.class = Song;
 Participatable.columns.tracks.class = Track;
 Participatable.columns.cv.class = Participatable;
+Participatable.columns.characters.class = Participatable;
 Participatable.columns.members.class = Participatable;
 Participatable.columns.units.class = Participatable;
 Song.columns.has.class = Participatable;
